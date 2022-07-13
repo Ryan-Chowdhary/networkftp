@@ -27,11 +27,16 @@ try:
     path, file_name = os.path.split(fname)
     print(f'file requested by client {addr}', file_name, sep=': ')
     file_content = []
+    # FILE EXISTS == F.E
+    # FILE DOES NOT EXIST == F.NE
     try:
         file = open(fname, 'rb')
+        s.send(b'F.E')
     except FileNotFoundError as err:
         print(err)
+        c.send(b'F.NE')
         s.close()
+        print('~closing connection!')
         exit()
     con = ''
     while con != b'':
