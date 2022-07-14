@@ -15,6 +15,7 @@ def close():
 s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 try:
     s.bind((host, port))
+    print('server started on', (host, port))
 except OSError as err:
     print(err)
     exit()
@@ -31,13 +32,12 @@ try:
     # FILE DOES NOT EXIST == F.NE
     try:
         file = open(fname, 'rb')
-        s.send(b'F.E')
+        c.send(b'F.E')
     except FileNotFoundError as err:
         print(err)
         c.send(b'F.NE')
-        s.close()
         print('~closing connection!')
-        exit()
+        close()
     con = ''
     while con != b'':
         con = file.readline()
@@ -50,6 +50,7 @@ try:
     file.close()
     time.sleep(0.5)
     print(f'file {file_name} sent to client {addr}')
+    close()
 except KeyboardInterrupt as intr:
     print(intr)
     print('aborting!')
