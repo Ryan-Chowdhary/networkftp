@@ -13,6 +13,9 @@ except ConnectionRefusedError as err:
     print(err, 'it seems that the server is down or unreachable', sep='\n')
     exit()
 print('Connected to server!')
+file_tree= s.recv(2048*10)
+file_tree= file_tree.decode('utf-8', 'ignore')
+print(file_tree)
 filename= input('filename: ')
 path, file_name= os.path.split(filename)
 s.send(filename.encode())
@@ -25,6 +28,7 @@ try:
     elif file_status.decode() == 'F.NE':
         s.close()
         print('file does not exist on server')
+        print('~server disconnected!')
         exit()
 except Exception as err:
     print(err, 'an exception has occured at line 19', sep='\n')

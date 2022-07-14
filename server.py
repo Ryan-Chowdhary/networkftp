@@ -1,3 +1,4 @@
+
 import socket
 import time
 import os
@@ -7,22 +8,33 @@ port= 5000
 
 def close():
     try:
+        s.shutdown(socket.SHUT_RDWR)
         s.close()
         exit()
-    except Exception:
+    except Exception as err:
+        s.close()
+        print('wait until the service is free\'ed up')
         exit()
 
 s= socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-try:
-    s.bind((host, port))
-    print('server started on', (host, port))
-except OSError as err:
-    print(err)
-    exit()
+running= True
+while running:
+    try:
+        s.bind((host, port))
+        print('server started on', (host, port))
+        running= False
+    except OSError as err:
+        print(err)
+        s.close()
+        exit()
+    
 s.listen(5)
 try:
     c, addr = s.accept()
     print('connection recieved from', addr, sep=' ')
+    file_tree= os.popen('tree').read()
+    c.send(file_tree.encode())
+    print(f'file tree sent to client{addr}')
     fname= c.recv(1024)
     fname= fname.decode()
     path, file_name = os.path.split(fname)
@@ -40,15 +52,15 @@ try:
         close()
     con = ''
     while con != b'':
-        con = file.readline()
+        con = file.readline(1024)
         file_content.append(con)
-    print(f'sending file {fname} to client {addr}')
+    print(f'sending file {file_name} to client {addr}')
     for i in file_content:
         #time.sleep(0.01)
         c.send(i)
-        print(i.__sizeof__(), 'bytes sent')
+        if i.__sizeof__() >= 1024:
+            print(i.__sizeof__(), 'bytes sent')
     file.close()
-    time.sleep(0.5)
     print(f'file {file_name} sent to client {addr}')
     close()
 except KeyboardInterrupt as intr:
