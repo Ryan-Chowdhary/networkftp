@@ -22,6 +22,7 @@ def close():
 def create_dir(dir):
     try:
         os.mkdir(dir)
+        os.chdir(dir)
     except FileExistsError:
         os.chdir(dir)
 
