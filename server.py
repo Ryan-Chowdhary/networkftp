@@ -7,7 +7,7 @@ from time import sleep
 data = json.load(open('host.json'))
 admin= data['login_detail'][0]
 settings= data['service_setting'][0]
-host= settings['host']
+host= socket.gethostbyname()
 port= settings['port']
 #host= 'localhost'
 #port= 5000
