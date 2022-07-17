@@ -2,6 +2,7 @@ import socket
 import json
 import os
 import hashlib
+from time import sleep
 
 data = json.load(open('host.json'))
 admin= data['login_detail'][0]
@@ -32,7 +33,7 @@ except OSError as err:
     print('wait until the service is free\'ed up')
     exit()
     
-s.listen(5)
+s.listen(1)
 try:
     c, addr = s.accept()
     print('connection recieved from', addr, sep=' ')
@@ -63,14 +64,20 @@ try:
         con = file.readline(1024)
         file_content.append(con)
     print(f'sending file {file_name} to client {addr}')
-    c.send(str(file_content.__len__()).encode())
+    #length = str(file_content.__len__())
+    #c.send(length.encode())
+    #print(length)
     for i in file_content:
         #time.sleep(0.01)
         c.send(i)
         print(i.__sizeof__(), 'bytes sent')
+        sleep(0.000001)
     file.close()
+    c.send(b'end')
+    sleep(0.0001)
     print(f'file {file_name} sent to client {addr}')
     print('verifying file sent to client', addr)
+    sleep(1)
     # Hashing sent file
     sha256_hash = hashlib.sha256()
     for i in file_content:
@@ -79,6 +86,7 @@ try:
     hash = str(sha256_hash.hexdigest())
     c.send(hash.encode())
     new_file_hash = c.recv(1024).decode()
+    print(hash, new_file_hash, sep='\n')
     if str(hash) == str(new_file_hash):
         print('hashes match! File validity confrmed')
     else:

@@ -2,6 +2,7 @@ import socket
 import json
 import os
 import hashlib
+import time
 
 data = json.load(open('../host.json'))
 settings= data['service_setting'][0]
@@ -59,14 +60,15 @@ file_contents_list = []
 create_dir(file_id)
 
 file= open(file_name, 'wb')
-length = int(s.recv(1024).decode())
-content= s.recv(1024)
-for i in range(length):
+#length = s.recv(1024).decode()
+#print(length)
+while True:
+    content= s.recv(1024)
+    if content==b'end':
+        break
     file_contents_list.append(content)
     print(content.__sizeof__(), 'bytes recived')
     file.write(content)
-    content= s.recv(1024)
-print(content.__sizeof__(), 'bytes recived')
 file.close()
 print('file recieved')
 # Hashing recived file
@@ -77,6 +79,7 @@ for i in file_contents_list:
 new_file_hash = str(sha256_hash.hexdigest())
 original_hash = s.recv(1024).decode()
 s.send(new_file_hash.encode())
+print(new_file_hash, original_hash, sep='\n')
 if str(new_file_hash) == str(original_hash):
     print('hashes match! File validity confrmed')
 else:
