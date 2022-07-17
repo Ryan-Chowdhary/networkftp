@@ -1,0 +1,15 @@
+{
+    "service_setting": [
+        {
+            "host": "localhost",
+            "port": 5000
+        }
+    ],
+    "login_detail": [
+        {
+            "position": "Admin",
+            "username": "admin",
+            "password": "admin"
+        }
+    ]
+}1db1e26ff4934e68c530549a0513f85eaed293bdaca36cc270a6050266c2ec9d
