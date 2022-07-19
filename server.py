@@ -3,11 +3,12 @@ import json
 import os
 import hashlib
 from time import sleep
+import seedir
 
 data = json.load(open('host.json'))
 admin= data['login_detail'][0]
 settings= data['service_setting'][0]
-host= socket.gethostbyname()
+host= settings['host']
 port= settings['port']
 #host= 'localhost'
 #port= 5000
@@ -38,6 +39,7 @@ try:
     c, addr = s.accept()
     print('connection recieved from', addr, sep=' ')
     file_tree= os.popen('tree').read()
+    #file_tree= seedir.seedir
     c.send(file_tree.encode())
     print(f'file tree sent to client{addr}')
     fname= c.recv(1024)
@@ -71,10 +73,10 @@ try:
         #time.sleep(0.01)
         c.send(i)
         print(i.__sizeof__(), 'bytes sent')
-        sleep(0.000001)
+        sleep(0.00002)
     file.close()
     c.send(b'end')
-    sleep(0.0001)
+    sleep(0.0009)
     print(f'file {file_name} sent to client {addr}')
     print('verifying file sent to client', addr)
     sleep(1)
